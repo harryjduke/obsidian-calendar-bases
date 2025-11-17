@@ -4,6 +4,7 @@ import type {
   EventDropArg,
 } from "@fullcalendar/core";
 import dayGridPlugin from "@fullcalendar/daygrid";
+import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import FullCalendar from "@fullcalendar/react";
 import { BasesEntry, BasesPropertyId, DateValue, Value } from "obsidian";
@@ -270,16 +271,25 @@ export const CalendarReactView: React.FC<CalendarReactViewProps> = ({
   return (
     <FullCalendar
       ref={calendarRef}
-      plugins={[dayGridPlugin, interactionPlugin]}
+      plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
       initialView="dayGridMonth"
       firstDay={weekStartDay}
       headerToolbar={{
-        left: "",
+        left: "dayGridMonth,timeGridWeek",
         center: "title",
         right: "prev,today,next",
       }}
       buttonText={{
         today: "Today",
+        month: "Month",
+        week: "Week",
+      }}
+      views={{
+        timeGridWeek: {
+          allDaySlot: true,
+          slotMinTime: "00:00:00",
+          slotMaxTime: "24:00:00",
+        },
       }}
       navLinks={false}
       events={events}
