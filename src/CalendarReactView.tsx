@@ -4,6 +4,7 @@ import type {
   EventDropArg,
 } from "@fullcalendar/core";
 import dayGridPlugin from "@fullcalendar/daygrid";
+import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import FullCalendar from "@fullcalendar/react";
 import { BasesEntry, BasesPropertyId, DateValue, Value } from "obsidian";
@@ -37,11 +38,19 @@ export const CalendarReactView: React.FC<CalendarReactViewProps> = ({
   const calendarRef = useRef<FullCalendar>(null);
 
   const events = entries.map((calEntry) => {
+    // Check if the start date has a time component
+    const hasTime = calEntry.startDate.getHours() !== 0 || 
+      calEntry.startDate.getMinutes() !== 0 || 
+      calEntry.startDate.getSeconds() !== 0;
+
+    const isAllDay = !hasTime;
+
     // FullCalendar treats end dates as exclusive when allDay is true
-    // We need to add one day to the end date to make it inclusive
+    // We need to add one day to the end date to make it inclusive for all-day events
     // But if start and end are the same day, we don't set an end date (single day event)
     let adjustedEndDate = calEntry.endDate;
-    if (calEntry.endDate) {
+
+    if (calEntry.endDate && isAllDay) {
       const startDateOnly = new Date(
         calEntry.startDate.getFullYear(),
         calEntry.startDate.getMonth(),
@@ -68,7 +77,7 @@ export const CalendarReactView: React.FC<CalendarReactViewProps> = ({
       title: calEntry.entry.file.basename,
       start: calEntry.startDate,
       end: adjustedEndDate,
-      allDay: true,
+      allDay: isAllDay,
       extendedProps: {
         entry: calEntry.entry,
         originalEndDate: calEntry.endDate, // Keep track of original end date for drag operations
@@ -270,16 +279,25 @@ export const CalendarReactView: React.FC<CalendarReactViewProps> = ({
   return (
     <FullCalendar
       ref={calendarRef}
-      plugins={[dayGridPlugin, interactionPlugin]}
+      plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
       initialView="dayGridMonth"
       firstDay={weekStartDay}
       headerToolbar={{
-        left: "",
+        left: "dayGridMonth,timeGridWeek",
         center: "title",
         right: "prev,today,next",
       }}
       buttonText={{
         today: "Today",
+        month: "Month",
+        week: "Week",
+      }}
+      views={{
+        timeGridWeek: {
+          allDaySlot: true,
+          slotMinTime: "00:00:00",
+          slotMaxTime: "24:00:00",
+        },
       }}
       navLinks={false}
       events={events}

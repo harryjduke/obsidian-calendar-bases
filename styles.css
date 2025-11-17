@@ -155,3 +155,31 @@ body {
   cursor: default;
   padding: 2px 0px;
 }
+
+/* Week view specific styles */
+.bases-calendar-container {
+  .fc-timegrid-slot {
+    height: 2em !important;
+  }
+
+  .fc-timegrid-slot-label {
+    font-size: var(--font-ui-smaller) !important;
+    color: var(--text-muted) !important;
+  }
+
+  .fc-timegrid-axis {
+    background-color: var(--background-secondary) !important;
+  }
+
+  .fc-timegrid-divider {
+    padding: 0 !important;
+  }
+
+  .fc-timegrid-event {
+    border-radius: 3px !important;
+  }
+
+  .fc-timegrid-event-harness {
+    margin-right: 2px !important;
+  }
+}
